@@ -1,0 +1,4 @@
+#!/bin/bash
+for var in "$@"; do
+	php -f ./Version2.php "$var"
+done
