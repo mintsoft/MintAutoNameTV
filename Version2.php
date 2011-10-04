@@ -1,6 +1,6 @@
 <?php
 
-define('SHOWDEBUG', true);
+require_once("config.php");
 
 function var_dump_str($var)
 {
@@ -17,11 +17,6 @@ function var_dump_errstream($var)
 }
 
 require_once('class.thetvdbapi.php');
-
-$formatStr = "<SeriesName>/Season <SeriesNo>/<SeriesName> - [<SeriesNo>x<EpisodeNo>] - <EpisodeName>";
-$targetDir = "/media/SG-2TB/storage/TV/";
-
-$punctuationCharsToKill = array( ",", ".", "?", "!", "[", "]","-","_","'", ":", ";", '"',"(",")");
 
 function processFile($fn)
 {
@@ -49,6 +44,8 @@ function processFile($fn)
     //get filename info from datasource
 
 	$tvSeriesName = trim(str_replace($punctuationCharsToKill," ",$matches[1]));
+	//replace multiple whitespace characters with one
+	$tvSeriesName = preg_replace("/ +/"," ",$tvSeriesName);
     $seriesNo = $matches[2]*1;
     $episodeNo = $matches[3]*1;
 
@@ -62,10 +59,10 @@ function processFile($fn)
 	if(!$episodeid || !$serieid)
 	{
 		echo "#Could not find $fn or an error occurred, moving on\n";
-		fwrite(STDERR, "tvapi: ".var_dump_str($tvapi));
-		fwrite(STDERR, "serieid: ".var_dump_str($serieid));
-		fwrite(STDERR, "episodeid: ".var_dump_str($episodeid));
-		fwrite(STDERR, "matches: ".var_dump_str($matches));
+		var_dump_errstream($tvapi);
+		var_dump_errstream($serieid);
+		var_dump_errstream($episodeid);
+		var_dump_errstream($matches);
 		return false;
 	}
 	// get information about the episode
@@ -92,28 +89,13 @@ function processFile($fn)
 
 		$newFilename = str_replace(array("<SeriesName>","<SeriesNo>","<EpisodeNo>","<EpisodeName>"),array($tvSeriesName,$SeriesNo,$EpisodeNo,$EpisodeName),$formatStr).".".$extMatch[1];
 
-/*
-	#used to handle absolute paths, now ignored
-		$pathdir = "";
-		$faCount = count($fileArray);
-		if($faCount>1)	//absolute path
-		{
-			$x=0;
-			for($x=0; $x<$faCount-1; $x++)
-			{
-				$pathdir .= "{$fileArray[$x]}/";
-			}
-		}
-*/
 		$pathdir = $targetDir;
 		echo "dir=`dirname \"$pathdir$newFilename\"`; ";
-		echo '[[ -d "$dir" ]] || mkdir "$dir"; ';
+		echo '[[ -d "$dir" ]] || mkdir -p "$dir"; ';
 		echo 'mv "'.$origFilename.'" "'.$pathdir.$newFilename.'"';
 	}
 	echo "\n";
 }
-
-//var_dump($argv);
 
 if(!empty($argv[1]))
 	processFile($argv[1]);

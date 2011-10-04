@@ -1,3 +1,17 @@
 This is a wrapper or two around a PHP class I found somewhere on the internet.
 
 THe original location seems to be unavailable, however I found it in the yahoo cache (http://87.248.112.8/search/srpcache?ei=UTF-8&p=class.thetvdbapi.php&vm=r&fr=yfp-t-702&u=http://cc.bingj.com/cache.aspx?q=class.thetvdbapi.php&d=4924042867706657&mkt=en-GB&setlang=en-GB&w=117fdff6,47b6a3e9&icp=1&.intl=uk&sig=_oGRVQdm_7._AHF3D8gVQA--)
+
+Usage
+=====
+to use the script directly: php -f Version2.php "/my/filename.avi" 
+
+or to use the wrapper (to allow wildcards and bash expansion to do its voodoo)
+./autoname /my/target/directory/*
+
+this will output bash script for you to review and execute, the preferred technique is as follows:
+
+	./autoname /my/target/directory/* > ~/targetDir.sh
+	cat ~/targetDir.sh | bash
+
+With the user inspecting targetDir.sh before execution!

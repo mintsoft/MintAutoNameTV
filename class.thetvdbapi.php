@@ -192,7 +192,8 @@ class Thetvdb
      $returnVal = curl_exec($ch);
      
      curl_close($ch);
-     var_dump_errstream($returnVal);
+     if(SHOWDEBUG)
+     	var_dump_errstream($returnVal);
      return $returnVal;
    }
    
