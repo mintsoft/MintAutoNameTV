@@ -91,7 +91,7 @@ function processFile($fn)
 
 		$pathdir = $targetDir;
 		echo "dir=`dirname \"$pathdir$newFilename\"`; ";
-		echo '[[ -d "$dir" ]] || mkdir -p "$dir"; ';
+		echo '[[ -d "$dir" ]] || mkdir -p "$dir"; '."\n";
 		echo 'mv "'.$origFilename.'" "'.$pathdir.$newFilename.'"';
 	}
 	echo "\n";
