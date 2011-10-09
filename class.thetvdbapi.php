@@ -43,7 +43,13 @@ class Thetvdb
       
       $feed = self::DownloadUrl($url);
       $xml = simplexml_load_string($feed);
-      
+      if($xml===false)
+	  {
+		var_dump_errstream("Error Parsing XML:");
+		var_dump_errstream($xml);
+		return false;
+	  }
+	  
       $node = $xml->Series->seriesid;
 
       if($node !== NULL){
@@ -65,7 +71,13 @@ class Thetvdb
       
       $feed = self::DownloadUrl($url);
       $xml = simplexml_load_string($feed);
-      
+      if($xml===false)
+	  {
+		var_dump_errstream("Error Parsing XML:");
+		var_dump_errstream($xml);
+		return false;
+	  }
+	  
       $node = $xml->Episode->id;
 
       if($node !== NULL){
@@ -92,7 +104,13 @@ class Thetvdb
       $feed = self::DownloadUrl($url);
       if($feed){
          $xml = simplexml_load_string($feed);
-         
+         if($xml===false)
+     	 {
+			var_dump_errstream("Error Parsing XML:");
+			var_dump_errstream($xml);
+			return false;
+		 }
+		 
          $serie['id'] = $serieid;
          $serie['name'] = (string) $xml->Series->SeriesName;
          $serie['description'] = (string) $xml->Series->Overview;
@@ -129,7 +147,13 @@ class Thetvdb
       $feed = self::DownloadUrl($url);
       if($feed){
          $xml = simplexml_load_string($feed);
-         
+         if($xml===false)
+		 {
+			var_dump_errstream("Error Parsing XML:");
+			var_dump_errstream($xml);
+			return false;
+		 }
+		 
          $episode['id'] = $episodeid;
          $episode['serieid'] = (int) $xml->Episode->seriesid;
          $episode['season'] = (int) $xml->Episode->SeasonNumber;
