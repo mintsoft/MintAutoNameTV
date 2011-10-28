@@ -25,7 +25,7 @@ require_once('class.thetvdbapi.php');
 
 function processFile($fn, $seriesNameOverride="")
 {
-    global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
+	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
 	$fileArray = explode("/",$fn);
 
@@ -37,38 +37,38 @@ function processFile($fn, $seriesNameOverride="")
 	$matches = array();
 
 	if(!preg_match("/(.*?)[sS]?([0-9]+)[eExX\.]([0-9]+)(.*?)/",$file,$matches))
-    {
-        //echo "Can't do anything with this one, moving on";
-        return false;
-    }
+	{
+		//echo "Can't do anything with this one, moving on";
+		return false;
+	}
 
 	//$matches[1] = probably series name
 	//$matches[2] = season
-    //$matches[3] = episode
+	//$matches[3] = episode
 
-    //get filename info from datasource
+	//get filename info from datasource
 
 	$tvSeriesName = trim(str_replace($punctuationCharsToKill," ",$matches[1]));
 
 	//replace multiple whitespace characters with one
 	$tvSeriesName = preg_replace("/ +/"," ",$tvSeriesName);
-    $seriesNo = $matches[2]*1;
-    $episodeNo = $matches[3]*1;
+	$seriesNo = $matches[2]*1;
+	$episodeNo = $matches[3]*1;
 
 	//if the override has been specified on the command line
 	if($seriesNameOverride!=="")
-		$tvSeriesName = $seriesNameOverride;
+	$tvSeriesName = $seriesNameOverride;
 
 	$tvSlo = strtolower($tvSeriesName);
 	//Manually override the series name
 	if(!empty($overrides[$tvSlo]["SeriesName"]))
-        $tvSeriesName = $overrides[$tvSlo]["SeriesName"];
+		$tvSeriesName = $overrides[$tvSlo]["SeriesName"];
 
 	//tweak the Season and Episode numbers by the defined delta
-    if(!empty($overrides[$tvSlo]["SeasonNo"]))
+	if(!empty($overrides[$tvSlo]["SeasonNo"]))
 		$seriesNo += $overrides[$tvSlo]["SeasonNo"];
 
-    if(!empty($overrides[$tvSlo]["EpisodeNo"]))
+	if(!empty($overrides[$tvSlo]["EpisodeNo"]))
 		$episodeNo += $overrides[$tvSlo]["EpisodeNo"];
 
 	// create object
@@ -94,13 +94,13 @@ function processFile($fn, $seriesNameOverride="")
 	if($ep_info)
 	{
 		$SeriesNo 	= str_pad($ep_info['season'],2,"0",STR_PAD_LEFT);
-        $EpisodeNo 	= str_pad($ep_info['episode'],2,"0",STR_PAD_LEFT);
+		$EpisodeNo 	= str_pad($ep_info['episode'],2,"0",STR_PAD_LEFT);
 
-        $EpisodeName = trim(str_replace(":","-",$ep_info['name']));
+		$EpisodeName = trim(str_replace(":","-",$ep_info['name']));
 
-        //get the extension
-        $extMatch = array();
-        preg_match("/^.*\.([^\.]+)$/",$origFilename,$extMatch);
+		//get the extension
+		$extMatch = array();
+		preg_match("/^.*\.([^\.]+)$/",$origFilename,$extMatch);
 
 		$newFilename = str_replace(
 						array("<SeriesName>","<SeriesNo>","<EpisodeNo>","<EpisodeName>"),
