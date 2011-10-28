@@ -1,5 +1,10 @@
 <?php
-
+/**
+ *	Autoname-TV v-2.1
+ *
+ *	2011 - RE
+ */
+ 
 require_once("config.php");
 
 function var_dump_str($var)
@@ -20,7 +25,7 @@ require_once('class.thetvdbapi.php');
 
 function processFile($fn)
 {
-    global $formatStr, $punctuationCharsToKill, $targetDir;
+    global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
 	$fileArray = explode("/",$fn);
 
@@ -49,6 +54,18 @@ function processFile($fn)
     $seriesNo = $matches[2]*1;
     $episodeNo = $matches[3]*1;
 
+	$tvSlo = strtolower($tvSeriesName);
+	//Manually override the series name
+	if(!empty($overrides[$tvSlo]["SeriesName"]))
+        $tvSeriesName = $overrides[$tvSlo]["SeriesName"];
+
+	//tweak the Season and Episode numbers by the defined delta
+    if(!empty($overrides[$tvSlo]["SeasonNo"]))
+		$seriesNo += $overrides[$tvSlo]["SeasonNo"];
+
+    if(!empty($overrides[$tvSlo]["EpisodeNo"]))
+		$episodeNo += $overrides[$tvSlo]["EpisodeNo"];
+
 	// create object
 	$tvapi = new Thetvdb('DC9BAD6196023212');
 	// get serie id for 'fringe'
@@ -65,16 +82,9 @@ function processFile($fn)
 		var_dump_errstream($matches);
 		return false;
 	}
+
 	// get information about the episode
 	$ep_info = $tvapi->GetEpisodeData($episodeid);
-//	var_dump($ep_info);
-	/*
-	// get information about the serie, without the episodes
-	$serie_info = $tvapi->GetSerieData($serieid);
-
-	// get information about the serie, including the episodes
-	$serie_info = $tvapi->GetSerieData($serieid,true);
-	*/
 
 	if($ep_info)
 	{
@@ -103,4 +113,5 @@ else
 {
 	echo "Supply the filename as the argument\n";
 }
+
 ?>
