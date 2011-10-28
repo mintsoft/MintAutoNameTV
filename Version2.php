@@ -23,7 +23,7 @@ function var_dump_errstream($var)
 
 require_once('class.thetvdbapi.php');
 
-function processFile($fn)
+function processFile($fn, $seriesNameOverride="")
 {
     global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
@@ -49,10 +49,15 @@ function processFile($fn)
     //get filename info from datasource
 
 	$tvSeriesName = trim(str_replace($punctuationCharsToKill," ",$matches[1]));
+
 	//replace multiple whitespace characters with one
 	$tvSeriesName = preg_replace("/ +/"," ",$tvSeriesName);
     $seriesNo = $matches[2]*1;
     $episodeNo = $matches[3]*1;
+
+	//if the override has been specified on the command line
+	if($seriesNameOverride!=="")
+		$tvSeriesName = $seriesNameOverride;
 
 	$tvSlo = strtolower($tvSeriesName);
 	//Manually override the series name
@@ -97,7 +102,10 @@ function processFile($fn)
         $extMatch = array();
         preg_match("/^.*\.([^\.]+)$/",$origFilename,$extMatch);
 
-		$newFilename = str_replace(array("<SeriesName>","<SeriesNo>","<EpisodeNo>","<EpisodeName>"),array($tvSeriesName,$SeriesNo,$EpisodeNo,$EpisodeName),$formatStr).".".$extMatch[1];
+		$newFilename = str_replace(
+						array("<SeriesName>","<SeriesNo>","<EpisodeNo>","<EpisodeName>"),
+						array($tvSeriesName,$SeriesNo,$EpisodeNo,$EpisodeName),
+						$formatStr).".".$extMatch[1];
 
 		$pathdir = $targetDir;
 		echo "dir=`dirname \"$pathdir$newFilename\"`; ";
@@ -107,8 +115,19 @@ function processFile($fn)
 	echo "\n";
 }
 
-if(!empty($argv[1]))
-	processFile($argv[1]);
+//http://uk.php.net/manual/en/function.getopt.php
+$options = getopt("s:");
+
+$seriesNameOverride="";
+//s is the series override specified on the command line
+if($options['s']!='""')
+	$seriesNameOverride=$options['s'];
+
+//var_dump($argv);
+//exit;
+
+if(!empty($argv[3]))
+	processFile($argv[3], $seriesNameOverride);
 else
 {
 	echo "Supply the filename as the argument\n";

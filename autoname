@@ -1,4 +1,20 @@
 #!/bin/bash
+
+seriesName='""'
+while getopts s:h o
+do case "$o" in
+		s)	seriesName="$OPTARG";;
+		h)	echo -e "\tautoname [-s 'Series Name'] filename\n\t\tSpecify the filename. Optionally use -s to specify the TV Series manually." && exit 1;;
+		\?)	echo -e "\tautoname [-s 'Series Name'] filename\n\t\tSpecify the filename. Optionally use -s to specify the TV Series manually." && exit 1;;
+	esac
+done
+
+# Reset $@
+shift `echo $OPTIND-1 | bc`
+
+#echo $seriesName
+#echo "command: $1";
+
 for var in "$@"; do
-	php -f ./Version2.php "$var"
+	php ./Version2.php -s "$seriesName" "$var"
 done
