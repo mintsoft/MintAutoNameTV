@@ -23,7 +23,7 @@ function var_dump_errstream($var)
 
 require_once('class.thetvdbapi.php');
 
-function processFile($fn, $seriesNameOverride="")
+function processFile($fn, $seriesNameOverride="", $useOverrides=false)
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
@@ -60,17 +60,21 @@ function processFile($fn, $seriesNameOverride="")
 	$tvSeriesName = $seriesNameOverride;
 
 	$tvSlo = strtolower($tvSeriesName);
-	//Manually override the series name
-	if(!empty($overrides[$tvSlo]["SeriesName"]))
-		$tvSeriesName = $overrides[$tvSlo]["SeriesName"];
 
-	//tweak the Season and Episode numbers by the defined delta
-	if(!empty($overrides[$tvSlo]["SeasonNo"]))
-		$seriesNo += $overrides[$tvSlo]["SeasonNo"];
+	//If user uses the flag for overrides then utalise them!
+	if($useOverrides)
+	{
+		//Manually override the series name
+		if(!empty($overrides[$tvSlo]["SeriesName"]))
+			$tvSeriesName = $overrides[$tvSlo]["SeriesName"];
 
-	if(!empty($overrides[$tvSlo]["EpisodeNo"]))
-		$episodeNo += $overrides[$tvSlo]["EpisodeNo"];
+		//tweak the Season and Episode numbers by the defined delta
+		if(!empty($overrides[$tvSlo]["SeasonNo"]))
+			$seriesNo += $overrides[$tvSlo]["SeasonNo"];
 
+		if(!empty($overrides[$tvSlo]["EpisodeNo"]))
+			$episodeNo += $overrides[$tvSlo]["EpisodeNo"];
+	}
 	// create object
 	$tvapi = new Thetvdb('DC9BAD6196023212');
 	// get serie id for 'fringe'
@@ -115,22 +119,26 @@ function processFile($fn, $seriesNameOverride="")
 	echo "\n";
 }
 
-//http://uk.php.net/manual/en/function.getopt.php
-$options = getopt("s:");
-
 $seriesNameOverride="";
 //s is the series override specified on the command line
-if($options['s']!='""')
-	$seriesNameOverride=$options['s'];
+if($argv[1] != '""')
+	$seriesNameOverride = $argv[1];
 
-//var_dump($argv);
-//exit;
+$useOverrides = (bool)$argv[2];
+
+/*
+var_dump($seriesNameOverride);
+var_dump($useOverrides);
+
+var_dump($argv);
+exit;
+*/
 
 if(!empty($argv[3]))
-	processFile($argv[3], $seriesNameOverride);
+	processFile($argv[3], $seriesNameOverride, $useOverrides);
 else
 {
-	echo "Supply the filename as the argument\n";
+	echo "Use the wrapping script, the input to this is way too intolerant to be used directly. Supply the filename as the argument\n";
 }
 
 ?>

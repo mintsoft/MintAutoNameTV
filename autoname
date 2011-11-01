@@ -1,20 +1,25 @@
 #!/bin/bash
 
 seriesName='""'
-while getopts s:h o
+enableNobbles=0
+while getopts s:so o
 do case "$o" in
 		s)	seriesName="$OPTARG";;
-		h)	echo -e "\tautoname [-s 'Series Name'] filename\n\t\tSpecify the filename. Optionally use -s to specify the TV Series manually." && exit 1;;
-		\?)	echo -e "\tautoname [-s 'Series Name'] filename\n\t\tSpecify the filename. Optionally use -s to specify the TV Series manually." && exit 1;;
+		o)	enableNobbles=1;;
+		\?)	echo -e "\tautoname [-s 'Series Name'] [-o] filename\n\t\tSpecify the filename. Optionally use\n\t -s to specify the TV Series manually\n\t -o to enable manual tweaks (overrides) from config.php" && exit 1;;
 	esac
 done
 
 # Reset $@
-shift `echo $OPTIND-1 | bc`
+shift $(($OPTIND-1))
 
-#echo $seriesName
-#echo "command: $1";
+#Resolve the current path of the symlink
+# if the script has been symlinked into
+# /usr/bin
+SCRIPT_PATH="$0";
+[[ -h "${SCRIPT_PATH}" ]] && SCRIPT_PATH=`readlink "${SCRIPT_PATH}"`
+SCRIPT_PATH=`dirname "${SCRIPT_PATH}"`;
 
 for var in "$@"; do
-	php ./Version2.php -s "$seriesName" "$var"
+	php "${SCRIPT_PATH}"/Version2.php "${seriesName}" ${enableNobbles} "${var}"
 done
