@@ -2,11 +2,20 @@
 
 seriesName='""'
 enableNobbles=0
-while getopts s:so o
+while getopts s:ho o
 do case "$o" in
-		s)	seriesName="$OPTARG";;
-		o)	enableNobbles=1;;
-		\?)	echo -e "\tautoname [-s 'Series Name'] [-o] filename\n\t\tSpecify the filename. Optionally use\n\t -s to specify the TV Series manually\n\t -o to enable manual tweaks (overrides) from config.php" && exit 1;;
+		s)
+			seriesName="$OPTARG"
+		;;
+		o)	
+			enableNobbles=1
+		;;
+		h|\?)	
+			echo -e "\n    autoname [-s 'Series Name'] [-o] filename\n"
+			echo -e "\t -s to specify the TV Series manually"
+			echo -e "\t -o to enable manual tweaks (overrides) from config.php\n" 
+			exit 1
+		;;
 	esac
 done
 
