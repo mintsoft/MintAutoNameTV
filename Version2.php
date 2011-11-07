@@ -76,7 +76,7 @@ function processFile($fn, $seriesNameOverride="", $useOverrides=false)
 			$episodeNo += $overrides[$tvSlo]["EpisodeNo"];
 	}
 	// create object
-	$tvapi = new Thetvdb('DC9BAD6196023212');
+	$tvapi = new Thetvdb(THETVDB_APIKEY);
 	// get serie id for 'fringe'
 	$serieid = $tvapi->GetSerieId($tvSeriesName);
 	// get episode id for fringe S01E01

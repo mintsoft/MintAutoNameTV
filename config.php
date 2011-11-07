@@ -2,6 +2,9 @@
 
 define('SHOWDEBUG', false);
 
+//Populate this with a TheTVDB_API key
+define('THETVDB_APIKEY', '');
+
 //the target filename: total path will be $targetDir$formatStr
 $formatStr = "<SeriesName>/Season <SeriesNo>/<SeriesName> - [<SeriesNo>x<EpisodeNo>] - <EpisodeName>";
 //the base directory,
@@ -20,7 +23,7 @@ $punctuationCharsToKill = array( ",", ".", "?", "!", "[", "]","-","_","'", ":", 
 $overrides = array(
 	"american dad" => array(
 			"SeriesName"=> "",
-			"SeasonNo" => -1,
+			"SeasonNo" => +1,
 			"EpisodeNo" => 0,
 			),
 	"the office" => array(
