@@ -23,7 +23,7 @@ function var_dump_errstream($var)
 
 require_once('class.thetvdbapi.php');
 
-function processFile($fn, $seriesNameOverride="", $useOverrides=false)
+function processFile($fn, $seriesNameOverride="", $useOverrides=false, $dontMoveDir=false)
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
@@ -111,9 +111,19 @@ function processFile($fn, $seriesNameOverride="", $useOverrides=false)
 						array($tvSeriesName,$SeriesNo,$EpisodeNo,$EpisodeName),
 						$formatStr).".".$extMatch[1];
 
-		$pathdir = $targetDir;
-		echo "dir=`dirname \"$pathdir$newFilename\"`; ";
-		echo '[[ -d "$dir" ]] || mkdir -p "$dir"; '."\n";
+		if($dontMoveDir)
+		{
+			$pathdir="./";
+			$newFNArray = explode("/", $newFilename);
+			$newFilename = $newFNArray[count($newFNArray)-1];
+		}
+		else
+		{
+			$pathdir = $targetDir;
+			echo "dir=`dirname \"$pathdir$newFilename\"`; ";
+			echo '[[ -d "$dir" ]] || mkdir -p "$dir"; '."\n";
+		}
+
 		echo 'mv "'.$origFilename.'" "'.$pathdir.$newFilename.'"';
 	}
 	echo "\n";
@@ -125,17 +135,20 @@ if($argv[1] != '""')
 	$seriesNameOverride = $argv[1];
 
 $useOverrides = (bool)$argv[2];
-
+$dontMoveDir  = (bool)$argv[3];
+$filenameIndex = 4;
 /*
+var_dump($argv[$filenameIndex]);
 var_dump($seriesNameOverride);
 var_dump($useOverrides);
+var_dump($dontMoveDir);
 
 var_dump($argv);
 exit;
 */
 
-if(!empty($argv[3]))
-	processFile($argv[3], $seriesNameOverride, $useOverrides);
+if(!empty($argv[$filenameIndex]))
+	processFile($argv[$filenameIndex], $seriesNameOverride, $useOverrides, $dontMoveDir);
 else
 {
 	echo "Use the wrapping script, the input to this is way too intolerant to be used directly. Supply the filename as the argument\n";

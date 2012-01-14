@@ -2,7 +2,8 @@
 
 seriesName='""'
 enableNobbles=0
-while getopts s:ho o
+dontMoveDir=0
+while getopts s:hon o
 do case "$o" in
 		s)
 			seriesName="$OPTARG"
@@ -10,9 +11,13 @@ do case "$o" in
 		o)	
 			enableNobbles=1
 		;;
+		n)
+			dontMoveDir=1
+		;;
 		h|\?)	
-			echo -e "\n    autoname [-s 'Series Name'] [-o] filename\n"
+			echo -e "\n    autoname [-s 'Series Name'] [-on] filename\n"
 			echo -e "\t -s to specify the TV Series manually"
+			echo -e "\t -n to only rename the file, not move its directory"
 			echo -e "\t -o to enable manual tweaks (overrides) from config.php\n" 
 			exit 1
 		;;
@@ -30,5 +35,5 @@ SCRIPT_PATH="$0";
 SCRIPT_PATH=`dirname "${SCRIPT_PATH}"`;
 
 for var in "$@"; do
-	php "${SCRIPT_PATH}"/Version2.php "${seriesName}" ${enableNobbles} "${var}"
+	php "${SCRIPT_PATH}"/Version2.php "${seriesName}" ${enableNobbles} ${dontMoveDir} "${var}"
 done
