@@ -124,7 +124,7 @@ function processFile($fn, $seriesNameOverride="", $useOverrides=false, $dontMove
 			echo '[[ -d "$dir" ]] || mkdir -p "$dir"; '."\n";
 		}
 
-		echo 'mv "'.$origFilename.'" "'.$pathdir.$newFilename.'"';
+		echo 'mv -n "'.$origFilename.'" "'.$pathdir.$newFilename.'"';
 	}
 	echo "\n";
 }
