@@ -21,9 +21,14 @@ function var_dump_errstream($var)
 	fwrite(STDERR,"$str");
 }
 
+function echo_errstream($str)
+{
+	fwrite(STDERR, "$str");
+}
+
 require_once('class.thetvdbapi.php');
 
-function processFile($fn, $seriesNameOverride="", $useOverrides=false, $dontMoveDir=false)
+function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episodeNumOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false)
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
@@ -36,9 +41,11 @@ function processFile($fn, $seriesNameOverride="", $useOverrides=false, $dontMove
 
 	$matches = array();
 
-	if(!preg_match("/(.*?)[sS]?([0-9]+)[eExX\.]([0-9]+)(.*?)/",$file,$matches))
+	// if doesn't match the regex and the user hasn't overridden all the argumentos
+	if(	!preg_match("/(.*?)[sS]?([0-9]+)[eExX\.]([0-9]+)(.*?)/",$file,$matches) &&
+		!($seriesNameOverride!=="" && $seriesNumOverride!=="" && $episodeNumOverride!=="") )
 	{
-		//echo "Can't do anything with this one, moving on";
+		echo_errstream("# File ($file) does not match pattern and not all properties were overriden, moving on\n");
 		return false;
 	}
 
@@ -47,21 +54,25 @@ function processFile($fn, $seriesNameOverride="", $useOverrides=false, $dontMove
 	//$matches[3] = episode
 
 	//get filename info from datasource
-
-	$tvSeriesName = trim(str_replace($punctuationCharsToKill," ",$matches[1]));
+	$tvSeriesName = isset($matches[1])?$matches[1]:"";
+	$tvSeriesName = trim( str_replace( $punctuationCharsToKill, " ", $tvSeriesName ) );
 
 	//replace multiple whitespace characters with one
 	$tvSeriesName = preg_replace("/ +/"," ",$tvSeriesName);
-	$seriesNo = $matches[2]*1;
-	$episodeNo = $matches[3]*1;
+	$seriesNo = isset($matches[2])?($matches[2]*1):"";
+	$episodeNo = isset($matches[3])?($matches[3]*1*1):"";
 
 	//if the override has been specified on the command line
-	if($seriesNameOverride!=="")
-	$tvSeriesName = $seriesNameOverride;
+	if ($seriesNameOverride!=="")
+		$tvSeriesName = $seriesNameOverride;
+	if ($seriesNumOverride!=="")
+		$seriesNo = $seriesNumOverride;
+	if ($episodeNumOverride!=="")
+		$episodeNo = $episodeNumOverride;
 
 	$tvSlo = strtolower($tvSeriesName);
 
-	//If user uses the flag for overrides then utalise them!
+	//If user uses the flag for overrides then utilise them!
 	if($useOverrides)
 	{
 		//Manually override the series name
@@ -77,14 +88,13 @@ function processFile($fn, $seriesNameOverride="", $useOverrides=false, $dontMove
 	}
 	// create object
 	$tvapi = new Thetvdb(THETVDB_APIKEY);
-	// get serie id for 'fringe'
+
 	$serieid = $tvapi->GetSerieId($tvSeriesName);
-	// get episode id for fringe S01E01
 	$episodeid = $tvapi->GetEpisodeId($serieid,$seriesNo,$episodeNo);
 
 	if(!$episodeid || !$serieid)
 	{
-		echo "#Could not find $fn or an error occurred, moving on\n";
+		echo_errstream("Could not find $fn or an error occurred, moving on\n");
 		var_dump_errstream($tvapi);
 		var_dump_errstream($serieid);
 		var_dump_errstream($episodeid);
@@ -123,32 +133,28 @@ function processFile($fn, $seriesNameOverride="", $useOverrides=false, $dontMove
 			echo "dir=`dirname \"$pathdir$newFilename\"`; ";
 			echo '[[ -d "$dir" ]] || mkdir -p "$dir"; '."\n";
 		}
-
-		echo 'mv -i "'.$origFilename.'" "'.$pathdir.$newFilename.'"';
+		echo 'mv '.($forcemv?"-f ":($interactivemv?"-i ":"-n ")).'"'.$origFilename.'" "'.$pathdir.$newFilename.'"';
 	}
 	echo "\n";
 }
 
 $seriesNameOverride="";
-//s is the series override specified on the command line
-if($argv[1] != '""')
-	$seriesNameOverride = $argv[1];
 
-$useOverrides = (bool)$argv[2];
-$dontMoveDir  = (bool)$argv[3];
-$filenameIndex = 4;
-/*
-var_dump($argv[$filenameIndex]);
-var_dump($seriesNameOverride);
-var_dump($useOverrides);
-var_dump($dontMoveDir);
+$options = getopt( "s:S:e:onfi" );
 
-var_dump($argv);
-exit;
-*/
+$seriesNameOverride = $options['s'];
+$seriesNum = $options['S'];
+$episodeNum = $options['e'];
+$useOverrides = isset($options['o']);
+$dontMoveDir  = isset($options['n']);
+$forcemv = isset($options['f']);
+$interactivemv = isset($options['i']);
+$filenameIndex = count($argv)-1;
 
 if(!empty($argv[$filenameIndex]))
-	processFile($argv[$filenameIndex], $seriesNameOverride, $useOverrides, $dontMoveDir);
+{
+	processFile( $argv[$filenameIndex], $seriesNameOverride, $seriesNum, $episodeNum, $useOverrides, $dontMoveDir, $forcemv, $interactivemv );
+}
 else
 {
 	echo "Use the wrapping script, the input to this is way too intolerant to be used directly. Supply the filename as the argument\n";

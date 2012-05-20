@@ -1,24 +1,32 @@
 #!/bin/bash
 
-seriesName='""'
-enableNobbles=0
-dontMoveDir=0
-while getopts s:hon o
+seriesName=""
+enableNobbles=""
+dontMoveDir=""
+enableOverwrites=""
+seriesNumber=""
+episodeNumber=""
+mvinteractive=""
+
+while getopts s:S:e:hionf o
 do case "$o" in
-		s)
-			seriesName="$OPTARG"
-		;;
-		o)	
-			enableNobbles=1
-		;;
-		n)
-			dontMoveDir=1
-		;;
-		h|\?)	
-			echo -e "\n    autoname [-s 'Series Name'] [-on] filename\n"
+		s)	seriesName="${OPTARG}"	;;
+		S)	seriesNumber="${OPTARG}"	;;
+		e)	episodeNumber="${OPTARG}"	;;
+		o)	enableNobbles="-o"	;;
+		n)	dontMoveDir="-n"	;;
+		f)	enableOverwrites="-f"	;;
+		i)	mvinteractive="-i"	;;
+		h|\?)
+			echo -e "\n    autoname [-s 'Series Name'] [-S 'Series #'] [-e 'Episode #'] [-ifno] filename\n"
 			echo -e "\t -s to specify the TV Series manually"
+			echo -e "\t -S to specify the Series number manually"
+			echo -e "\t -e to specify the episode number manually"
 			echo -e "\t -n to only rename the file, not move its directory"
-			echo -e "\t -o to enable manual tweaks (overrides) from config.php\n" 
+			echo -e "\t -f to enable file overwrites (mv -f)"
+			echo -e "\t -i to prompt before overwriting files (mv -i)"
+			echo -e "\t -o to enable manual tweaks (overrides) from config.php\n"
+			echo -e "If -o is specified, the -sSe options are applied prior to looking up overrides in config.php"
 			exit 1
 		;;
 	esac
@@ -35,5 +43,5 @@ SCRIPT_PATH="$0";
 SCRIPT_PATH=`dirname "${SCRIPT_PATH}"`;
 
 for var in "$@"; do
-	php "${SCRIPT_PATH}"/Version2.php "${seriesName}" ${enableNobbles} ${dontMoveDir} "${var}"
+	php "${SCRIPT_PATH}"/Version2.php -s "${seriesName}" -S "${seriesNumber}" -e "${episodeNumber}" ${enableOverwrites} ${enableNobbles} ${dontMoveDir} ${mvinteractive} "${var}"
 done
