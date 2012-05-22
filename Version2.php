@@ -140,7 +140,7 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 
 $seriesNameOverride="";
 
-$options = getopt( "s:S:e:onfi" );
+$options = getopt( "s:S:e:onfid" );
 
 $seriesNameOverride = $options['s'];
 $seriesNum = $options['S'];
@@ -150,6 +150,7 @@ $dontMoveDir  = isset($options['n']);
 $forcemv = isset($options['f']);
 $interactivemv = isset($options['i']);
 $filenameIndex = count($argv)-1;
+define('SHOWDEBUG',isset($options['d']));
 
 if(!empty($argv[$filenameIndex]))
 {
