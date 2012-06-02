@@ -2,9 +2,9 @@
 /**
  *	Autoname-TV v-2.1
  *
- *	2011 - RE
+ *	2011-2012 - RE
  */
- 
+
 require_once("config.php");
 
 function var_dump_str($var)
@@ -28,9 +28,16 @@ function echo_errstream($str)
 
 require_once('class.thetvdbapi.php');
 
-function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episodeNumOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false)
+function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episodeNumOverride="", $targetDirOverride="",
+						$formatStrOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false)
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
+
+	if($targetDirOverride)
+		$targetDir=$targetDirOverride;
+
+	if($formatStrOverride)
+		$formatStr=$formatStrOverride;
 
 	$fileArray = explode("/",$fn);
 
@@ -140,11 +147,13 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 
 $seriesNameOverride="";
 
-$options = getopt( "s:S:e:onfid" );
+$options = getopt( "s:S:e:t:m:onfid" );
 
 $seriesNameOverride = $options['s'];
 $seriesNum = $options['S'];
 $episodeNum = $options['e'];
+$targetDirOverride = $options['t'];
+$formatStrOverride = $options['m'];
 $useOverrides = isset($options['o']);
 $dontMoveDir  = isset($options['n']);
 $forcemv = isset($options['f']);
@@ -154,7 +163,8 @@ define('SHOWDEBUG',isset($options['d']));
 
 if(!empty($argv[$filenameIndex]))
 {
-	processFile( $argv[$filenameIndex], $seriesNameOverride, $seriesNum, $episodeNum, $useOverrides, $dontMoveDir, $forcemv, $interactivemv );
+	processFile( $argv[$filenameIndex], $seriesNameOverride, $seriesNum, $episodeNum, $targetDirOverride,
+				 $formatStrOverride, $useOverrides, $dontMoveDir, $forcemv, $interactivemv );
 }
 else
 {
