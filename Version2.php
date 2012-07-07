@@ -29,7 +29,7 @@ function echo_errstream($str)
 require_once('class.thetvdbapi.php');
 
 function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episodeNumOverride="", $targetDirOverride="",
-						$formatStrOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false)
+						$formatStrOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false, $doCopy=false)
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
@@ -140,14 +140,14 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 			echo "dir=`dirname \"$pathdir$newFilename\"`; ";
 			echo '[[ -d "$dir" ]] || mkdir -p "$dir"; '."\n";
 		}
-		echo 'mv '.($forcemv?"-f ":($interactivemv?"-i ":"-n ")).'"'.$origFilename.'" "'.$pathdir.$newFilename.'"';
+		echo ($doCopy?'cp ':'mv ').($forcemv?"-f ":($interactivemv?"-i ":"-n ")).'"'.$origFilename.'" "'.$pathdir.$newFilename.'"';
 	}
 	echo "\n";
 }
 
 $seriesNameOverride="";
 
-$options = getopt( "s:S:e:t:m:onfid" );
+$options = getopt( "s:S:e:t:m:confid" );
 
 $seriesNameOverride = $options['s'];
 $seriesNum = $options['S'];
@@ -159,12 +159,13 @@ $dontMoveDir  = isset($options['n']);
 $forcemv = isset($options['f']);
 $interactivemv = isset($options['i']);
 $filenameIndex = count($argv)-1;
+$doCopy = isset($options['c']);
 define('SHOWDEBUG',isset($options['d']));
 
 if(!empty($argv[$filenameIndex]))
 {
 	processFile( $argv[$filenameIndex], $seriesNameOverride, $seriesNum, $episodeNum, $targetDirOverride,
-				 $formatStrOverride, $useOverrides, $dontMoveDir, $forcemv, $interactivemv );
+				 $formatStrOverride, $useOverrides, $dontMoveDir, $forcemv, $interactivemv, $doCopy );
 }
 else
 {

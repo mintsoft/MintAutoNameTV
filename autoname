@@ -10,9 +10,11 @@ mvinteractive=""
 debugMode=""
 targetDir=""
 maskOverride=""
+doCopy=""
 
-while getopts s:S:e:t:m:dhionf o
+while getopts s:S:e:t:m:cdhionf o
 do case "$o" in
+		c)  doCopy="-c" ;;
 		d)	debugMode="-d"	;;
 		s)	seriesName="${OPTARG}"	;;
 		S)	seriesNumber="${OPTARG}"	;;
@@ -24,7 +26,8 @@ do case "$o" in
 		f)	enableOverwrites="-f"	;;
 		i)	mvinteractive="-i"	;;
 		h|\?)
-			echo -e "\n    autoname [-s 'Series Name'] [-S 'Series #'] [-e 'Episode #'] [-t '/tmp/'] [-m '<SeriesNo>x<EpisodeNo>'] [-ifno] filename\n"
+			echo -e "\n    autoname [-s 'Series Name'] [-S 'Series #'] [-e 'Episode #'] [-t '/tmp/'] [-m '<SeriesNo>x<EpisodeNo>'] [-cdifno] filename\n"
+			echo -e "\t -c to use cp instead of mv"
 			echo -e "\t -d to dump the retrieved XML to stderr (for debugging)"
 			echo -e "\t -s to specify the TV Series manually"
 			echo -e "\t -S to specify the Series number manually"
@@ -54,5 +57,5 @@ SCRIPT_PATH=`dirname "${SCRIPT_PATH}"`;
 
 for var in "$@"; do
 	php "${SCRIPT_PATH}"/Version2.php -s "${seriesName}" -S "${seriesNumber}" -e "${episodeNumber}" -t "${targetDir}" \
-		-m "${maskOverride}" ${debugMode} ${enableOverwrites} ${enableNobbles} ${dontMoveDir} ${mvinteractive} "${var}"
+		-m "${maskOverride}" ${debugMode} ${doCopy} ${enableOverwrites} ${enableNobbles} ${dontMoveDir} ${mvinteractive} "${var}"
 done

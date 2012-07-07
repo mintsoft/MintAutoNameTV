@@ -218,6 +218,8 @@ class Thetvdb
      curl_close($ch);
      if(SHOWDEBUG)
      	var_dump_errstream($returnVal);
+     	
+     //hack fix the Overview tags :http://forums.thetvdb.com/viewtopic.php?f=17&t=9164
      return $returnVal;
    }
    
