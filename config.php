@@ -1,7 +1,7 @@
 <?php
 
 //Populate this with a TheTVDB_API key
-define('THETVDB_APIKEY', 'DC9BAD6196023212');
+define('THETVDB_APIKEY', '');
 
 //the target filename: total path will be $targetDir$formatStr
 $formatStr = "<SeriesName>/Season <SeriesNo>/<SeriesName> - [<SeriesNo>x<EpisodeNo>] - <EpisodeName>";
