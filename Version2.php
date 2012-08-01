@@ -117,7 +117,7 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 		$SeriesNo 	= str_pad($ep_info['season'],2,"0",STR_PAD_LEFT);
 		$EpisodeNo 	= str_pad($ep_info['episode'],2,"0",STR_PAD_LEFT);
 
-		$EpisodeName = trim(str_replace(":","-",$ep_info['name']));
+		$EpisodeName = trim(str_replace(array(":","/","\\"),"-",$ep_info['name']));
 
 		//get the extension
 		$extMatch = array();
