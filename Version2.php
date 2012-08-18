@@ -29,9 +29,13 @@ function echo_errstream($str)
 require_once('class.thetvdbapi.php');
 
 function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episodeNumOverride="", $targetDirOverride="",
-						$formatStrOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false, $doCopy=false)
+						$formatStrOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false,
+						$doCopy=false, $takeTMDBSeriesName=false)
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
+
+	$invalidOutputFilenameChars = array(":","/","\\");
+	$invalidOutputFilenameReplacement = "-";
 
 	if($targetDirOverride)
 		$targetDir=$targetDirOverride;
@@ -96,8 +100,11 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 	// create object
 	$tvapi = new Thetvdb(THETVDB_APIKEY);
 
-	$serieid = $tvapi->GetSerieId($tvSeriesName);
+	$seriesObject = $tvapi->GetSeriesObjectByName($tvSeriesName);
+	$serieid = $seriesObject->id;
 	$episodeid = $tvapi->GetEpisodeId($serieid,$seriesNo,$episodeNo);
+
+	#$serieid = $tvapi->GetSerieId($tvSeriesName);
 
 	if(!$episodeid || !$serieid)
 	{
@@ -109,6 +116,11 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 		return false;
 	}
 
+	if ($takeTMDBSeriesName)
+	{
+		$tvSeriesName = trim(str_replace($invalidOutputFilenameChars, $invalidOutputFilenameReplacement, $seriesObject->SeriesName));
+	}
+
 	// get information about the episode
 	$ep_info = $tvapi->GetEpisodeData($episodeid);
 
@@ -117,15 +129,15 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 		$SeriesNo 	= str_pad($ep_info['season'],2,"0",STR_PAD_LEFT);
 		$EpisodeNo 	= str_pad($ep_info['episode'],2,"0",STR_PAD_LEFT);
 
-		$EpisodeName = trim(str_replace(array(":","/","\\"),"-",$ep_info['name']));
+		$EpisodeName = trim(str_replace($invalidOutputFilenameChars, $invalidOutputFilenameReplacement, $ep_info['name']));
 
 		//get the extension
 		$extMatch = array();
 		preg_match("/^.*\.([^\.]+)$/",$origFilename,$extMatch);
 
 		$newFilename = str_replace(
-						array("<SeriesName>","<SeriesNo>","<EpisodeNo>","<EpisodeName>"),
-						array($tvSeriesName,$SeriesNo,$EpisodeNo,$EpisodeName),
+						array("<SeriesName>", "<SeriesNo>", "<EpisodeNo>", "<EpisodeName>"),
+						array($tvSeriesName, $SeriesNo, $EpisodeNo, $EpisodeName),
 						$formatStr).".".$extMatch[1];
 
 		if($dontMoveDir)
@@ -147,13 +159,15 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 
 $seriesNameOverride="";
 
-$options = getopt( "s:S:e:t:m:confid" );
+$options = getopt( "s:S:e:t:m:confida" );
 
 $seriesNameOverride = $options['s'];
 $seriesNum = $options['S'];
 $episodeNum = $options['e'];
 $targetDirOverride = $options['t'];
 $formatStrOverride = $options['m'];
+
+$takeTMDBSeriesName = isset($options['a']);
 $useOverrides = isset($options['o']);
 $dontMoveDir  = isset($options['n']);
 $forcemv = isset($options['f']);
@@ -165,7 +179,7 @@ define('SHOWDEBUG',isset($options['d']));
 if(!empty($argv[$filenameIndex]))
 {
 	processFile( $argv[$filenameIndex], $seriesNameOverride, $seriesNum, $episodeNum, $targetDirOverride,
-				 $formatStrOverride, $useOverrides, $dontMoveDir, $forcemv, $interactivemv, $doCopy );
+				 $formatStrOverride, $useOverrides, $dontMoveDir, $forcemv, $interactivemv, $doCopy, $takeTMDBSeriesName );
 }
 else
 {

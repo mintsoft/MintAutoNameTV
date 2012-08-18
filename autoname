@@ -1,6 +1,7 @@
 #!/bin/bash
 
 seriesName=""
+takeTMDBSeriesName=""
 enableNobbles=""
 dontMoveDir=""
 enableOverwrites=""
@@ -12,10 +13,11 @@ targetDir=""
 maskOverride=""
 doCopy=""
 
-while getopts s:S:e:t:m:cdhionf o
+while getopts s:S:e:t:m:acdhionf o
 do case "$o" in
 		c)  doCopy="-c" ;;
 		d)	debugMode="-d"	;;
+		a)  takeTMDBSeriesName="-a"  ;;
 		s)	seriesName="${OPTARG}"	;;
 		S)	seriesNumber="${OPTARG}"	;;
 		e)	episodeNumber="${OPTARG}"	;;
@@ -29,7 +31,8 @@ do case "$o" in
 			echo -e "\n    autoname [-s 'Series Name'] [-S 'Series #'] [-e 'Episode #'] [-t '/tmp/'] [-m '<SeriesNo>x<EpisodeNo>'] [-cdifno] filename\n"
 			echo -e "\t -c to use cp instead of mv"
 			echo -e "\t -d to dump the retrieved XML to stderr (for debugging)"
-			echo -e "\t -s to specify the TV Series manually"
+			echo -e "\t -a to automatically use the name of the series from TMDB"
+			echo -e "\t -s to specify the TV Series name manually"
 			echo -e "\t -S to specify the Series number manually"
 			echo -e "\t -e to specify the Episode number manually"
 			echo -e "\t -t to specify the Base target directory manually"
@@ -57,5 +60,5 @@ SCRIPT_PATH=`dirname "${SCRIPT_PATH}"`;
 
 for var in "$@"; do
 	php "${SCRIPT_PATH}"/Version2.php -s "${seriesName}" -S "${seriesNumber}" -e "${episodeNumber}" -t "${targetDir}" \
-		-m "${maskOverride}" ${debugMode} ${doCopy} ${enableOverwrites} ${enableNobbles} ${dontMoveDir} ${mvinteractive} "${var}"
+		-m "${maskOverride}" ${takeTMDBSeriesName} ${debugMode} ${doCopy} ${enableOverwrites} ${enableNobbles} ${dontMoveDir} ${mvinteractive} "${var}"
 done

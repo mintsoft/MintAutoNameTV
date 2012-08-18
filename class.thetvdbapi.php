@@ -59,8 +59,41 @@ class Thetvdb
          return false;
       }
    }
-   
-   
+
+   /*
+    * This method returns the series object for the given seriename
+    */
+   public function GetSeriesObjectByName($seriename)
+   {
+      $seriename = urlencode($seriename);
+      $url = $this->tvdbapiurl . 'GetSeries.php?seriesname=' . $seriename;
+
+      $feed = self::DownloadUrl($url);
+      $xml = simplexml_load_string($feed);
+
+      if($xml===false)
+	  {
+		var_dump_errstream("Error Parsing XML:");
+		var_dump_errstream($xml);
+		return false;
+	  }
+
+	  return $xml->Series;
+      /*
+      $node = $xml->Series->seriesid;
+
+      if($node !== NULL)
+      {
+         $serieid = (int) $node;
+         return $serieid;
+      }
+      else
+      {
+         return false;
+      }
+      */
+   }
+
    /*
     * This method returns the episode id for the
     * given serieid and season/episode number
@@ -217,8 +250,10 @@ class Thetvdb
      
      curl_close($ch);
      if(SHOWDEBUG)
+     {
+     	var_dump_errstream($url);
      	var_dump_errstream($returnVal);
-     	
+     }
      //hack fix the Overview tags :http://forums.thetvdb.com/viewtopic.php?f=17&t=9164
      return $returnVal;
    }
