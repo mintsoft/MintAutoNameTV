@@ -1,7 +1,7 @@
 <?php
 
 //Populate this with a TheTVDB_API key
-define('THETVDB_APIKEY', '');
+define('THETVDB_APIKEY', 'DC9BAD6196023212');
 
 //the target filename: total path will be $targetDir$formatStr
 $formatStr = "<SeriesName>/Season <SeriesNo>/<SeriesName> - [<SeriesNo>x<EpisodeNo>] - <EpisodeName>";
@@ -40,13 +40,17 @@ $overrides = array(
 			"EpisodeNo"  => 0
 		),
 	"kitchen nightmares us" => array(
-			"SeriesName" => "Kitchen Nightmares",
 			"SeasonNo"   => -1,
 			"EpisodeNo"  => 0
 		),
 	"kitchen nightmares" => array(
 			"SeriesName" => "Kitchen Nightmares",
 			"SeasonNo"   => -1,
+			"EpisodeNo"  => 0
+		),
+	"castle" => array(
+			"SeriesName" => "Castle (2009)",
+			"SeasonNo"   => 0,
 			"EpisodeNo"  => 0
 		),
 	);
