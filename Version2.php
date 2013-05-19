@@ -34,7 +34,7 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
-	$invalidOutputFilenameChars = array(":","/","\\");
+	$invalidOutputFilenameChars = array(":","/","\\","?");
 	$invalidOutputFilenameReplacement = "-";
 
 	if($targetDirOverride)
