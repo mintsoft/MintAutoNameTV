@@ -30,7 +30,7 @@ require_once('class.thetvdbapi.php');
 
 function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episodeNumOverride="", $targetDirOverride="",
 						$formatStrOverride="", $useOverrides=false, $dontMoveDir=false, $forcemv=false, $interactivemv=false,
-						$doCopy=false, $takeTMDBSeriesName=false)
+						$doCopy=false, $takeTVDBSeriesName=false)
 {
 	global $formatStr, $punctuationCharsToKill, $targetDir, $overrides;
 
@@ -116,7 +116,7 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 		return false;
 	}
 
-	if ($takeTMDBSeriesName)
+	if ($takeTVDBSeriesName)
 	{
 		$tvSeriesName = trim(str_replace($invalidOutputFilenameChars, $invalidOutputFilenameReplacement, $seriesObject->SeriesName));
 	}
@@ -167,7 +167,7 @@ $episodeNum = $options['e'];
 $targetDirOverride = $options['t'];
 $formatStrOverride = $options['m'];
 
-$takeTMDBSeriesName = isset($options['a']);
+$takeTVDBSeriesName = isset($options['a']);
 $useOverrides = isset($options['o']);
 $dontMoveDir  = isset($options['n']);
 $forcemv = isset($options['f']);
@@ -179,7 +179,7 @@ define('SHOWDEBUG',isset($options['d']));
 if(!empty($argv[$filenameIndex]))
 {
 	processFile( $argv[$filenameIndex], $seriesNameOverride, $seriesNum, $episodeNum, $targetDirOverride,
-				 $formatStrOverride, $useOverrides, $dontMoveDir, $forcemv, $interactivemv, $doCopy, $takeTMDBSeriesName );
+				 $formatStrOverride, $useOverrides, $dontMoveDir, $forcemv, $interactivemv, $doCopy, $takeTVDBSeriesName );
 }
 else
 {
