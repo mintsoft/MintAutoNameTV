@@ -53,16 +53,17 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 	$matches = array();
 
 	// if doesn't match the regex and the user hasn't overridden all the argumentos
-	if(	!preg_match("/(.*?)[sS]?([0-9]+)[eExX\.]([0-9]+)(.*?)/",$file,$matches) &&
+	if(	!preg_match("/(.*?)[sS]?(?:(?:([0-9]+)[eExX\.]([0-9]+))|(?:([1-9])([0-9]{2})))(.*?)/",$file,$matches) &&
 		!($seriesNameOverride!=="" && $seriesNumOverride!=="" && $episodeNumOverride!=="") )
 	{
 		echo_errstream("# File ($file) does not match pattern and not all properties were overriden, moving on\n");
 		return false;
 	}
-
+	
+	//var_dump($matches);
 	//$matches[1] = probably series name
-	//$matches[2] = season
-	//$matches[3] = episode
+	//$matches[2] = season or $matches[4]
+	//$matches[3] = episode or $matches[5]
 
 	//get filename info from datasource
 	$tvSeriesName = isset($matches[1])?$matches[1]:"";
@@ -70,8 +71,8 @@ function processFile($fn, $seriesNameOverride="", $seriesNumOverride="", $episod
 
 	//replace multiple whitespace characters with one
 	$tvSeriesName = preg_replace("/ +/"," ",$tvSeriesName);
-	$seriesNo = isset($matches[2])?($matches[2]*1):"";
-	$episodeNo = isset($matches[3])?($matches[3]*1*1):"";
+	$seriesNo = (int)(empty($matches[2]) ? $matches[4] : $matches[2]);
+	$episodeNo =(int)(empty($matches[3]) ? $matches[5] : $matches[3]);
 
 	//if the override has been specified on the command line
 	if ($seriesNameOverride!=="")
